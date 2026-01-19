@@ -9,7 +9,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -94,17 +93,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
   const [isNotesOpen, setIsNotesOpen] = React.useState(pathname.startsWith("/notes"));
 
-  // React.useEffect(() => {
-  //   if (pathname.includes("/notes")) {
-  //     setIsNotesOpen(true);
-  //   } else {
-  //     setIsNotesOpen(false);
-  //   }
-  // }, [pathname]);
-
   return (
     <Sidebar className="top-16" variant="inset" {...props} collapsible="icon">
-      <SidebarHeader></SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           {items.map((item) => {

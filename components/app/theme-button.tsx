@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { MoonIcon, SunIcon } from "lucide-react";
 
-export function ModeToggle() {
+export function ThemeButton() {
   const { setTheme, theme } = useTheme();
 
   return (

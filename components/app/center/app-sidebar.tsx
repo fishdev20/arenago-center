@@ -21,8 +21,7 @@ import { soccerPitch } from "@lucide/lab";
 import {
   Calendar,
   ChartLine,
-  ChevronUp,
-  Dot,
+  ChevronRight,
   Icon,
   LayoutDashboard,
   Rows,
@@ -41,21 +40,6 @@ const items = [
     url: "/center/dashboard",
     icon: LayoutDashboard,
   },
-  // {
-  //   title: "Notes",
-  //   url: "", // We'll detect activity via submenus
-  //   icon: SquarePen,
-  //   submenus: [
-  //     {
-  //       title: "All Notes",
-  //       url: "/center/notes",
-  //     },
-  //     {
-  //       title: "New Note",
-  //       url: "/center/notes/new",
-  //     },
-  //   ],
-  // },
   {
     title: "Calendar",
     url: "/center/calendar",
@@ -85,13 +69,28 @@ const items = [
     title: "Settings",
     url: "/center/settings",
     icon: Settings,
+    submenus: [
+      { title: "General", url: "/center/settings/general", icon: Settings },
+      { title: "Profile", url: "/center/settings/profile", icon: Settings },
+      { title: "Appearance", url: "/center/settings/appearance", icon: Settings },
+      { title: "Notifications", url: "/center/settings/notifications", icon: Settings },
+    ],
   },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { open } = useSidebar();
-  const [isNotesOpen, setIsNotesOpen] = React.useState(pathname.startsWith("/notes"));
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>({});
+
+  React.useEffect(() => {
+    const next: Record<string, boolean> = {};
+    for (const item of items) {
+      if (!item.submenus) continue;
+      next[item.title] = item.submenus.some((s) => pathname.startsWith(s.url));
+    }
+    setOpenGroups((prev) => ({ ...prev, ...next }));
+  }, [pathname]);
 
   return (
     <Sidebar className="top-16" variant="inset" {...props} collapsible="icon">
@@ -104,75 +103,65 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             const isActive = pathname === item.url || isSubmenuActive;
 
             if (item.submenus) {
+              const isGroupOpen = Boolean(openGroups[item.title]);
               return (
                 <div key={item.title}>
                   {!open ? (
                     <DropdownMenu>
-                      <DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild>
                         <SidebarMenuItem>
-                          <SidebarMenuButton
-                            asChild
-                            tooltip={item.title}
-                            isActive={isActive}
-                            className="text-lg"
-                          >
-                            <Link href={`${item.url}`}>
-                              <item.icon size={32} />
+                          <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
+                            <button type="button" className="flex w-full items-center gap-2">
+                              <item.icon />
                               <span>{item.title}</span>
-                            </Link>
+                            </button>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                       </DropdownMenuTrigger>
+
                       <DropdownMenuContent className="w-56" side="right">
-                        {item.submenus.map((sub) => {
-                          return (
-                            <DropdownMenuItem
-                              asChild
-                              key={sub.url}
-                              className={pathname === sub.url ? "bg-muted text-primary" : ""}
-                            >
-                              <Link href={`${sub.url}`}>
-                                <span>{sub.title}</span>
-                              </Link>
-                            </DropdownMenuItem>
-                          );
-                        })}
+                        {item.submenus.map((sub) => (
+                          <DropdownMenuItem
+                            asChild
+                            key={sub.url}
+                            className={pathname === sub.url ? "bg-muted text-primary" : ""}
+                          >
+                            <Link href={sub.url}>
+                              <span>{sub.title}</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
-                    <SidebarMenuItem key={item.title}>
-                      <Collapsible open={isNotesOpen} onOpenChange={setIsNotesOpen}>
+                    <SidebarMenuItem>
+                      <Collapsible
+                        open={isGroupOpen}
+                        onOpenChange={(v) => setOpenGroups((p) => ({ ...p, [item.title]: v }))}
+                      >
                         <CollapsibleTrigger asChild className="cursor-pointer">
                           <SidebarMenuButton
-                            className="flex items-center justify-between w-full text-lg"
+                            className="flex items-center justify-between w-full"
                             tooltip={item.title}
                             isActive={isActive}
                           >
-                            <item.icon size={32} />
+                            <item.icon />
                             <span>{item.title}</span>
-                            <ChevronUp
-                              size={32}
-                              className={`ml-auto transition-transform duration-200 ${
-                                isNotesOpen ? "rotate-180" : ""
-                              }`}
+                            <ChevronRight
+                              className={`ml-auto transition-transform duration-200 ${isGroupOpen ? "rotate-90" : ""}`}
                             />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
+
                         <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
                           <SidebarMenuSub>
                             {item.submenus.map((submenu) => {
                               const isSubmenuSelected = pathname === submenu.url;
                               return (
                                 <SidebarMenuSubItem key={submenu.url}>
-                                  <SidebarMenuSubButton
-                                    asChild
-                                    isActive={isSubmenuSelected}
-                                    className="text-base"
-                                  >
+                                  <SidebarMenuSubButton asChild isActive={isSubmenuSelected}>
                                     <Link href={submenu.url} className="w-full">
-                                      <span>
-                                        <Dot size={32} />
-                                      </span>
+                                      <item.icon />
                                       <span>{submenu.title}</span>
                                     </Link>
                                   </SidebarMenuSubButton>
@@ -189,12 +178,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             } else {
               return (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={isActive}
-                    // className="text-lg"
-                  >
+                  <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
                     <Link href={`${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>

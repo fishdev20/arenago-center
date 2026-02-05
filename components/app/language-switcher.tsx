@@ -64,7 +64,7 @@ export function LanguageSwitcher() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           aria-label="Change language"
           className="relative rounded-full"

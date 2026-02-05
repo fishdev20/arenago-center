@@ -14,8 +14,8 @@ export function ThemeButton() {
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
           <Button
-            className="rounded-full bg-background mr-2"
-            variant="outline"
+            className="rounded-full mr-2"
+            variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >

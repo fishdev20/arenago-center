@@ -18,21 +18,59 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/lib/supabase/client";
 
 type CenterStatus = "pending" | "active" | "rejected" | null;
 
 export default function PendingClient(props: {
   userDisplayName: string;
   centerName: string;
+  centerId: string | null;
   createdAt: string | null;
   centerStatus: CenterStatus;
   canEdit?: boolean;
 }) {
+  const router = useRouter();
+  const [status, setStatus] = React.useState<CenterStatus>(props.centerStatus);
+
+  React.useEffect(() => {
+    setStatus(props.centerStatus);
+  }, [props.centerStatus]);
+
+  React.useEffect(() => {
+    if (!props.centerId) return;
+
+    const channel = supabase
+      .channel(`center-pending:${props.centerId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "centers",
+          filter: `id=eq.${props.centerId}`,
+        },
+        (payload) => {
+          const nextStatus = (payload.new as { status?: CenterStatus }).status ?? null;
+          setStatus(nextStatus);
+          if (nextStatus === "active") {
+            router.replace("/center/settings/profile");
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [props.centerId, router]);
+
   const submittedLabel = React.useMemo(() => {
     if (!props.createdAt) return "Submitted recently";
     try {
@@ -42,8 +80,8 @@ export default function PendingClient(props: {
     }
   }, [props.createdAt]);
 
-  const isRejected = props.centerStatus === "rejected";
-  const isPending = props.centerStatus === "pending" || !props.centerStatus;
+  const isRejected = status === "rejected";
+  const isPending = status === "pending" || !status;
 
   const headline = isRejected
     ? "Your application needs changes"
@@ -133,9 +171,8 @@ export default function PendingClient(props: {
         <Card className="overflow-hidden">
           <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr]">
             <div className="relative min-h-[140px] sm:min-h-full">
-              {/* Put a real image at /public/images/pending-venue.jpg */}
               <Image
-                src="/images/pending-venue.jpg"
+                src="/images/home-bg.jpg"
                 alt="Sports center"
                 fill
                 className="object-cover"

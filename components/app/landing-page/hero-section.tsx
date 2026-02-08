@@ -116,7 +116,7 @@ export function HeroSection() {
             </div>
           </div>
 
-            <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             <div className="flex justify-center md:justify-start w-full">
               <p>Trusted by 300+ sports facilities</p>
             </div>

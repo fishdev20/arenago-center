@@ -31,6 +31,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { StatusBadge } from "./status-badge";
 import { api } from "@/lib/api/api-client";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase/client";
 
 type Center = {
   id: string;
@@ -200,6 +201,30 @@ export default function CentersReview({ centers }: { centers: Center[] }) {
   const [detailOpen, setDetailOpen] = React.useState(false);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  React.useEffect(() => {
+    const channel = supabase
+      .channel("admin-centers-realtime")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "centers" }, (payload) => {
+        const row = payload.new as Center;
+        setItems((prev) => [row, ...prev.filter((c) => c.id !== row.id)]);
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "centers" }, (payload) => {
+        const row = payload.new as Center;
+        setItems((prev) => prev.map((c) => (c.id === row.id ? { ...c, ...row } : c)));
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "centers" }, (payload) => {
+        const oldRow = payload.old as { id?: string };
+        if (!oldRow?.id) return;
+        setItems((prev) => prev.filter((c) => c.id !== oldRow.id));
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, []);
+
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     return items.filter((c) => {

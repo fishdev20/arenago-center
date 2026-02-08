@@ -194,8 +194,8 @@ export default function FeaturesSection() {
 
               <div className="group relative rounded-full border-2 border-primary bg-muted px-6 py-10">
                 <img
-                  src="/images/person.png"
-                  alt="Phone preview"
+                  src="/images/man-sit.png"
+                  alt="features"
                   className="mx-auto h-80 object-contain lg:h-100"
                 />
                 <div className="absolute inset-0 -z-10">

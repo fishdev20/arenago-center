@@ -38,7 +38,7 @@ export default async function CenterLayout({
       <AppSidebar role={role} />
       <SidebarInset className="bg-muted relative">
         <ScrollArea className="h-[calc(100svh-(32px))] rounded-md relative">
-          <header className="sticky top-0 flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-muted/60 backdrop-blur-sm z-12 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16 border-b shadow-md">
+          <header className="sticky top-0 flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-muted/60 backdrop-blur-sm z-12 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16 border-b">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />

@@ -4,6 +4,7 @@ import { ThemeButton } from "@/components/app/theme-button";
 import { Button } from "@/components/ui/button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { ChevronDown, Volleyball } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -71,37 +72,100 @@ export default async function AppEntry() {
 
         <FeaturesSection />
 
-        <section id="faq" className="py-14 animate-fade-up">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">FAQ</p>
-              <h2 className="mt-2 text-2xl font-semibold">Questions, answered</h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Everything you need to know about onboarding, pricing, and support.
+        <section id="player-app" className="py-14 animate-fade-up">
+          <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <div className="relative overflow-hidden p-4">
+              {/* <div className="absolute -top-14 right-6 h-32 w-32 rounded-full bg-primary/10 blur-2xl" /> */}
+              <Image
+                src="/images/man-phone.png"
+                alt="Player app preview"
+                width={460}
+                height={520}
+                className="mx-auto max-h-[360px] w-auto object-contain"
+              />
+            </div>
+            <div className="space-y-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">For players</p>
+              <h2 className="text-2xl font-semibold md:text-3xl">
+                Help players discover courts and book instantly
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Share your venues on the Arena Go player app. Customers can search nearby
+                facilities, see real-time availability, and book in seconds.
               </p>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild>
+                  <Link href="/auth/register">List your center</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/auth/login">Open player app</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" className="py-14 animate-fade-up">
+          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+            <div className="space-y-6">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                FAQ
+              </span>
+              <div>
+                <h2 className="text-3xl font-semibold">Have more questions?</h2>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Arena Go helps sports centers manage bookings, staff, and facilities in one place.
+                  If you still need help, our team is here.
+                </p>
+              </div>
+              <div className="relative rounded-3xl border border-border/60 bg-muted p-6 shadow-md">
+                <h3 className="text-lg font-semibold">Can’t find answers?</h3>
+                <p className="mt-2 text-sm text-muted-foreground max-w-3xs md:max-w-xs">
+                  Contact our support team for onboarding help, pricing questions, or data
+                  migrations.
+                </p>
+                <Image
+                  src="/images/man-question.png"
+                  alt="Support representative"
+                  width={200}
+                  height={420}
+                  className="absolute right-0 bottom-0 h-32 w-auto -scale-x-100 sm:h-52"
+                />
+                <Button className="mt-5" asChild>
+                  <Link href="/auth/register">Contact us</Link>
+                </Button>
+              </div>
             </div>
             <div className="grid gap-4">
               {[
                 {
-                  q: "How quickly can we go live?",
-                  a: "Most centers are onboarded in under a week with court setup, pricing, and staff roles.",
+                  q: "What is Arena Go and how can it help my center?",
+                  a: "Arena Go unifies bookings, payments, staff, and analytics so you can run your facilities with less admin work.",
                 },
                 {
-                  q: "Do you support payments and invoicing?",
-                  a: "Yes, collect payments online and export invoicing reports for finance teams.",
+                  q: "Do you offer a free trial?",
+                  a: "Yes. Start with a trial to set up courts, pricing, and availability before going live.",
                 },
                 {
-                  q: "Can we manage multiple locations?",
-                  a: "Arena Go supports multi-location groups with shared reporting and permissions.",
+                  q: "Which payment methods are supported?",
+                  a: "Accept cards and online wallets. We also support invoices and on-site payments when needed.",
                 },
-              ].map((item) => (
+                {
+                  q: "Can I manage multiple locations?",
+                  a: "Multi-location reporting and shared staff permissions are available for growing center groups.",
+                },
+              ].map((item, index) => (
                 <details
                   key={item.q}
-                  className="group rounded-2xl border border-border/60 bg-background p-5"
+                  open={index === 1}
+                  className="group rounded-2xl border border-border/60 bg-muted p-5"
                 >
-                  <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                     <span>{item.q}</span>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-transform group-open:rotate-180">
+                      <ChevronDown className="h-4 w-4" />
+                    </span>
                   </summary>
                   <p className="mt-3 text-sm text-muted-foreground">{item.a}</p>
                 </details>

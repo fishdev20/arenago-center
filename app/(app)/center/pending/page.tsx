@@ -37,13 +37,14 @@ export default async function CenterPendingPage() {
 
   // if already active, you might redirect them
   if (profile.is_active && profile.centers?.status === "active") {
-    redirect("/center/dashboard");
+    redirect("/center/settings/profile");
   }
 
   return (
     <PendingClient
       userDisplayName={profile.display_name ?? "Center Admin"}
       centerName={profile.centers?.name ?? "Your Center"}
+      centerId={profile.centers?.id ?? null}
       createdAt={profile.centers?.created_at ?? null}
       centerStatus={
         (profile.centers?.status as "pending" | "active" | "rejected" | null) ?? "pending"

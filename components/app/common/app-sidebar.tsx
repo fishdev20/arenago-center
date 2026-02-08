@@ -238,7 +238,7 @@ export function AppSidebar({
 
   return (
     <Sidebar {...props} collapsible="icon" className="bg-background">
-      <SidebarHeader className="bg-muted">
+      <SidebarHeader className="bg-muted h-16 border-b px-3 flex items-center transition-all duration-200 ease-linear group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -247,12 +247,13 @@ export function AppSidebar({
       hover:bg-transparent
       hover:text-inherit
       active:bg-transparent
-      focus-visible:ring-0"
+      focus-visible:ring-0
+      transition-all duration-200 ease-linear
+      group-data-[collapsible=icon]:justify-center"
             >
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"></div>
-              <div className="grid flex-1 text-left text-lg leading-tight">
-                <span className="truncate font-medium">Arena Go</span>
-                <span className="truncate text-xs">Center</span>
+              <div className="grid flex-1 text-left text-lg leading-tight transition-all duration-200 ease-linear group-data-[collapsible=icon]:hidden group-data-[collapsible=icon]:opacity-0">
+                <span className="truncate text-xl font-semibold uppercase">Arena Go</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

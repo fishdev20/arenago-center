@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { notifyCenterRegistrationReviewed } from "@/lib/server/notifications";
 
 const admin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,6 +41,17 @@ export async function POST(req: Request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  if (status === "active" || status === "rejected") {
+    try {
+      await notifyCenterRegistrationReviewed(admin, {
+        centerId,
+        status,
+      });
+    } catch (notifyError) {
+      console.error("[admin/approve-center] failed to notify center", notifyError);
+    }
   }
 
   return NextResponse.json({ ok: true, center: data });

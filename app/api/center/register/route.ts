@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { geocodeAddress } from "@/lib/server/geocoding";
 import { upsertCenterCoordinates } from "@/lib/server/center-coordinates";
+import { notifyAdminsNewCenterRegistration } from "@/lib/server/notifications";
 
 const admin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -99,6 +100,16 @@ export async function POST(req: Request) {
 
   if (metaErr) {
     return NextResponse.json({ error: metaErr.message }, { status: 400 });
+  }
+
+  try {
+    await notifyAdminsNewCenterRegistration(admin, {
+      centerId: center.id,
+      centerName,
+      submittedByUserId: userId,
+    });
+  } catch (error) {
+    console.error("[center/register] failed to notify admins", error);
   }
 
   return NextResponse.json({ ok: true, centerId: center.id });

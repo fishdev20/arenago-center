@@ -4,6 +4,7 @@ export const queryKeys = {
   sports: () => ["sports"] as const,
   centerFields: () => ["center-fields"] as const,
   centerAmenities: () => ["center-amenities"] as const,
+  notifications: () => ["notifications"] as const,
   centers: () => ["centers"] as const,
   center: (centerId: string) => ["center", centerId] as const,
   bookings: (centerId: string) => ["bookings", centerId] as const,

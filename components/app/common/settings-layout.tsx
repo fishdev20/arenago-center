@@ -8,7 +8,9 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   return (
     <div className="flex items-center justify-center">
       <div className="relative flex flex-1 flex-col space-y-8 md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12 max-w-7xl">
-        <SettingsTabs role={role ?? "user"} />
+        <div className="lg:sticky lg:top-20 lg:self-start">
+          <SettingsTabs role={role ?? "user"} />
+        </div>
         <div className="w-full bg-card p-4 rounded-xl border shadow-sm">{children}</div>
       </div>
     </div>

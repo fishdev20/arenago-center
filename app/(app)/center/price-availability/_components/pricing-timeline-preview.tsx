@@ -31,11 +31,19 @@ function leftPct(startMin: number) {
   return (s / TOTAL_MIN) * 100;
 }
 
+function minuteToLabel(min: number) {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
 type LegendItem = { label: string; dotClass: string };
 
 export function PricingTimelinePreview({
   title = "Pricing Timeline Preview (24h)",
-  labels = ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "23:59"],
+  labels,
+  viewportStartMin = 0,
+  viewportEndMin = TOTAL_MIN,
   legend = [
     { label: "Standard", dotClass: "bg-primary" },
     { label: "Weekend Prime", dotClass: "bg-amber-400" },
@@ -83,10 +91,25 @@ export function PricingTimelinePreview({
 }: {
   title?: string;
   labels?: string[];
+  viewportStartMin?: number;
+  viewportEndMin?: number;
   legend?: LegendItem[];
   segments?: TimelineSegment[];
   footer?: string;
 }) {
+  const startMin = clamp(viewportStartMin, 0, TOTAL_MIN);
+  const endMin = clamp(viewportEndMin, startMin + 1, TOTAL_MIN);
+  const viewportRange = endMin - startMin;
+
+  const timelineLabels =
+    labels && labels.length > 0
+      ? labels
+      : Array.from({ length: 7 }).map((_, idx) => {
+          const p = idx / 6;
+          const v = Math.round(startMin + viewportRange * p);
+          return minuteToLabel(v);
+        });
+
   return (
     <div className="space-y-3">
       {/* Header row */}
@@ -105,7 +128,7 @@ export function PricingTimelinePreview({
 
       {/* Time labels */}
       <div className="grid grid-cols-7 text-xs text-muted-foreground">
-        {labels.map((t) => (
+        {timelineLabels.map((t) => (
           <div key={t} className="text-center">
             {t}
           </div>
@@ -123,8 +146,11 @@ export function PricingTimelinePreview({
 
         <div className="relative h-16">
           {segments.map((seg) => {
-            const left = leftPct(seg.startMin);
-            const w = widthPct(seg.startMin, seg.endMin);
+            const segStart = clamp(seg.startMin, startMin, endMin);
+            const segEnd = clamp(seg.endMin, startMin, endMin);
+            if (segEnd <= segStart) return null;
+            const left = ((segStart - startMin) / viewportRange) * 100;
+            const w = ((segEnd - segStart) / viewportRange) * 100;
             return (
               <div
                 key={seg.id}

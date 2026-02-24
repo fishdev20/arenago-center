@@ -61,7 +61,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-sm space-y-4 px-4 py-12">
+    <div className="mx-auto w-full max-w-xl space-y-4 px-4">
       <h1 className="text-xl font-semibold">Sign in</h1>
       <p className="text-sm text-muted-foreground">
         Sign in to access your center dashboard or admin tools.
